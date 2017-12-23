@@ -1,0 +1,7 @@
+[package]
+name = "density"
+description = "Find the average size of files in a directory"
+version = "0.1.0"
+authors = ["Alex Macleod <alex@macleod.io>"]
+
+[dependencies]
