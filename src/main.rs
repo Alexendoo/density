@@ -2,15 +2,31 @@ use std::env;
 use std::fs;
 use std::io;
 use std::path::Path;
+use std::string::String;
 use std::vec::Vec;
 
 fn main() {
+    let args = env::args().skip(1);
     let vec = &mut Vec::new();
-    let path = env::current_dir().unwrap();
 
-    let res = visit(&path, vec);
+    let mut max_len = 0;
+    for arg in args {
+        let len = arg.len();
+        if max_len < len {
+            max_len = len
+        }
 
-    println!("{} bytes/file", mean(res.unwrap()));
+        let res = visit(&arg, vec);
+
+        output_result(res, arg);
+    }
+}
+
+fn output_result(result: io::Result<&Vec<u64>>, directory: String) {
+    match result {
+        Ok(res) => println!("{} - {} bytes/file", directory, mean(res)),
+        Err(err) => println!("{} - {}", directory, err),
+    }
 }
 
 fn mean(sizes: &Vec<u64>) -> u64 {
@@ -20,7 +36,7 @@ fn mean(sizes: &Vec<u64>) -> u64 {
     sum / len
 }
 
-fn visit<'a>(parent: &Path, sizes: &'a mut Vec<u64>) -> io::Result<&'a Vec<u64>> {
+fn visit<'a, P: AsRef<Path>>(parent: &P, sizes: &'a mut Vec<u64>) -> io::Result<&'a Vec<u64>> {
     let metadata = fs::metadata(parent)?;
 
     if metadata.is_dir() {
