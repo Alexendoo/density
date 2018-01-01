@@ -69,7 +69,7 @@ fn visit<'a, P: AsRef<Path>>(
     Ok(sizes)
 }
 
-static SUFFIXES: [&str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+const SUFFIXES: [&str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 
 fn print_result(
     result: &Vec<u64>,
@@ -89,12 +89,15 @@ fn print_result(
 
         let power = base.pow(index as u32);
 
-        println!("{}{}\t{}", count / power, SUFFIXES[index as usize], directory);
-
-        return;
+        println!(
+            "{}{}\t{}",
+            count / power,
+            SUFFIXES[index as usize],
+            directory
+        );
+    } else {
+        println!("{}\t{}", count, directory);
     }
-
-    println!("{}\t{}", count, directory)
 }
 
 fn mean(sizes: &Vec<u64>) -> u64 {
