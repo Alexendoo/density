@@ -85,12 +85,11 @@ fn print_result(
             1024
         };
 
-        let float = count as f64;
-        let index = float.log(base as f64).floor() as usize;
+        let index = f64::log(count as f64, base as f64).floor();
 
         let power = base.pow(index as u32);
 
-        println!("{}{}\t{}", count / power, SUFFIXES[index], directory);
+        println!("{}{}\t{}", count / power, SUFFIXES[index as usize], directory);
 
         return;
     }
