@@ -6,9 +6,9 @@ use std::string::String;
 use std::vec::Vec;
 
 fn main() {
-    let vec = &mut Vec::new();
-
     for arg in env::args().skip(1) {
+        let vec = &mut Vec::new();
+
         output_result(visit(&arg, vec), arg);
     }
 }
