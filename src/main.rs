@@ -9,8 +9,9 @@ use std::vec::Vec;
 
 fn main() {
     let mut opts = getopts::Options::new();
-    // opts.optflag("h", "human-readable", "foo");
+    opts.optflag("h", "human-readable", "foo");
     opts.optflag("", "help", "display this help message");
+    opts.optflag("", "si", "...");
     opts.optflag("", "version", "display the version number");
 
     let args: Vec<String> = env::args().collect();
@@ -18,7 +19,7 @@ fn main() {
     match opts.parse(&args[1..]) {
         Ok(matches) => run(args, matches, opts),
         Err(failure) => println!("{}", failure),
-    };
+    }
 }
 
 fn run(args: Vec<String>, matches: getopts::Matches, opts: getopts::Options) {
@@ -32,10 +33,13 @@ fn run(args: Vec<String>, matches: getopts::Matches, opts: getopts::Options) {
         return;
     }
 
-    for arg in matches.free {
+    for arg in &matches.free {
         let vec = &mut Vec::new();
 
-        output_result(visit(&arg, vec), arg);
+        match visit(&arg, vec) {
+            Ok(result) => print_result(result, arg, &matches),
+            Err(error) => eprintln!("{}: {}", arg, error),
+        }
     }
 }
 
@@ -65,11 +69,33 @@ fn visit<'a, P: AsRef<Path>>(
     Ok(sizes)
 }
 
-fn output_result(result: io::Result<&Vec<u64>>, directory: String) {
-    match result {
-        Ok(res) => println!("{}\t{}", mean(res), directory),
-        Err(err) => eprintln!("{}: {}", directory, err),
+static SUFFIXES: [&str; 9] = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+
+fn print_result(
+    result: &Vec<u64>,
+    directory: &str,
+    matches: &getopts::Matches,
+) {
+    let count = mean(result);
+
+    if matches.opt_present("human-readable") {
+        let base: u64 = if matches.opt_present("si") {
+            1000
+        } else {
+            1024
+        };
+
+        let float = count as f64;
+        let index = float.log(base as f64).floor() as usize;
+
+        let power = base.pow(index as u32);
+
+        println!("{}{}\t{}", count / power, SUFFIXES[index], directory);
+
+        return;
     }
+
+    println!("{}\t{}", count, directory)
 }
 
 fn mean(sizes: &Vec<u64>) -> u64 {
