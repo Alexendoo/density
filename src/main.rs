@@ -9,8 +9,16 @@ use std::vec::Vec;
 
 fn main() {
     let mut opts = getopts::Options::new();
-    opts.optflag("h", "human-readable", "display human readable sizes (e.g. 1G, 50K)");
-    opts.optflag("", "si", "human-readable output (-h) with powers of 1000 rather than 1024");
+    opts.optflag(
+        "h",
+        "human-readable",
+        "display human readable sizes (e.g. 1G, 50K)",
+    );
+    opts.optflag(
+        "",
+        "si",
+        "human-readable output (-h) with powers of 1000 rather than 1024",
+    );
 
     opts.optflag("", "help", "display this help message");
     opts.optflag("", "version", "display the version number");
@@ -80,12 +88,8 @@ fn print_result(
     let count = mean(result);
 
     let si = matches.opt_present("si");
-    if si || matches.opt_present("human-readable")  {
-        let base: u64 = if si {
-            1000
-        } else {
-            1024
-        };
+    if count > 0 && (si || matches.opt_present("human-readable")) {
+        let base: u64 = if si { 1000 } else { 1024 };
 
         let index = f64::log(count as f64, base as f64).floor();
 
@@ -104,6 +108,11 @@ fn print_result(
 
 fn mean(sizes: &Vec<u64>) -> u64 {
     let len = sizes.len() as u64;
+
+    if len == 0 {
+        return 0;
+    }
+
     let sum: u64 = sizes.iter().sum();
 
     sum / len
