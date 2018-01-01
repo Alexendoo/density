@@ -4,7 +4,7 @@ description = "Find the average size of files in a directory"
 
 repository = "https://github.com/Alexendoo/density"
 
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Alex Macleod <alex@macleod.io>"]
 license = "MIT"
 
