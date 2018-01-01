@@ -7,8 +7,6 @@ use std::path::Path;
 use std::string::String;
 use std::vec::Vec;
 
-
-
 fn main() {
     let mut opts = getopts::Options::new();
     opts.optflag("h", "human-readable", "display human readable sizes (e.g. 1G, 50K)");
