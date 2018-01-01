@@ -1,3 +1,5 @@
+extern crate getopts;
+
 use std::env;
 use std::fs;
 use std::io;
@@ -6,11 +8,42 @@ use std::string::String;
 use std::vec::Vec;
 
 fn main() {
-    for arg in env::args().skip(1) {
+    let mut opts = getopts::Options::new();
+    // opts.optflag("h", "human-readable", "foo");
+    opts.optflag("", "help", "display this help message");
+    opts.optflag("", "version", "display the version number");
+
+    let args: Vec<String> = env::args().collect();
+
+    match opts.parse(&args[1..]) {
+        Ok(matches) => run(args, matches, opts),
+        Err(failure) => println!("{}", failure),
+    };
+}
+
+fn run(args: Vec<String>, matches: getopts::Matches, opts: getopts::Options) {
+    if matches.opt_present("help") {
+        print_usage(&args[0], opts);
+        return;
+    }
+
+    if matches.opt_present("version") {
+        println!("density v{}", env!("CARGO_PKG_VERSION"));
+        return;
+    }
+
+    for arg in matches.free {
         let vec = &mut Vec::new();
 
         output_result(visit(&arg, vec), arg);
     }
+}
+
+fn print_usage(program: &str, opts: getopts::Options) {
+    let mut brief = opts.short_usage(program);
+    brief.push_str(" [FILE]...");
+
+    println!("{}", opts.usage(&brief));
 }
 
 fn visit<'a, P: AsRef<Path>>(

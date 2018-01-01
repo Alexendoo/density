@@ -19,3 +19,4 @@ keywords = [
 travis-ci = { repository = "Alexendoo/density" }
 
 [dependencies]
+getopts = "0.2"
